@@ -33,8 +33,6 @@ public class Bolsa {
 		
 		thread1.start();
 		thread2.start();
-		thread1.start();
-		
 	}
 
 	private void iniciarPregao() {
