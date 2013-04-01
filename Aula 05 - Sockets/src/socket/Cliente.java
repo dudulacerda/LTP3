@@ -67,20 +67,11 @@ public class Cliente {
 			
 			t1.start();
 			envioMsg.start();
-			
-		
-			
-	
+
 		} catch (Exception e){
 			System.err.println(e);
 			System.exit(-1);
 		}
-		
-		
-		
-		
-		
 	}
-
 }
 
