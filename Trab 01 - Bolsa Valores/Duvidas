@@ -1,0 +1,12 @@
+Dúvidas
+
+1 - Pq variáveis que são acessadas por threads devem ser static?
+
+2 - Criar as instâncias de Ação em cada thread?
+
+3 - Criar as threads dentro das classes ou todas na classe BolsaValores? 
+    Como ficam as linhas de execucação em cada caso?
+    
+    
+4 - Variavés recebidas como paramêtros em métodos devem ser final?    
+

@@ -32,6 +32,7 @@ public class Corretora {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 
 		while ((primeiroValor * 2) > preco) {
 			try {
