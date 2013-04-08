@@ -11,11 +11,28 @@ public class BolsaValores {
 
 	public static void main(String[] args) {
 		
-		Valor retornaValor = new Valor(itau,petro,vale); //Cria um objeto e vai criar uma thread com o socket
+		Thread valor = new Thread(){
+			public void run(){
+				Server.servidor("valor", 4545, itau, petro, vale);
+			}
+		};
+		valor.start();
+		 
 		
-		Compra efetuaCompra = new Compra(itau,petro,vale);
+		Thread efetuaCompra = new Thread(){
+			public void run(){
+				Server.servidor("compra", 4646, itau, petro, vale);
+			}
+		};
+		efetuaCompra.start();
 		
-		Venda efetuaVenda = new Venda(itau,petro,vale);
+		Thread efetuaVenda = new Thread(){
+			public void run(){
+				Server.servidor("venda", 4747, itau, petro, vale);
+			}
+		};
+		efetuaVenda.start();
+		
 		
 		
 		
