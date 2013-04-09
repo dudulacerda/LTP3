@@ -1,3 +1,10 @@
+/* UNIFACS - Ciencia da Computacao 5º Semestre
+ * LTP3 - Trabalho 1 - Bolsa de Valores
+ * Prof.: Uedson Reis
+ * 
+ * Aluno:  Eduardo Lacerda Souza Junior
+ */
+
 package servers;
 
 import java.io.BufferedReader;
@@ -6,6 +13,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 import modelos.Acao;
 
@@ -13,16 +22,19 @@ public class Server {
 	
 	private static String acao;
 	private static double valor;
+	private static Map<String,Acao> mapaAcao;  //Colecao que ira guardar as 3 intancias de Acao
+	private static PrintWriter out;
+	private static BufferedReader in;
 
 	public static void servidor(String tipo,int porta,Acao itau,Acao petro,Acao vale){
-		while(true){
+		while(true){		//para ser executado infinitamente, fechando e reabrindo as conexoes a cada loop
 			try{
 				System.out.println(tipo + ": Aguardando Conexão..."); 
 				ServerSocket serverSocket = new ServerSocket(porta);
 				Socket socket = serverSocket.accept();					//Cria o socket quando recebe solicitação de conexão
 						
-				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);	//out para realizar envios de msg
-				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream())); 	//in para receber msg
+				out = new PrintWriter(socket.getOutputStream(), true);	//out para realizar envios de msg
+				in = new BufferedReader(new InputStreamReader(socket.getInputStream())); 	//in para receber msg
 				System.out.println(tipo + ": Conexão Efetuada.");
 					
 				acao = in.readLine();			//recebe o noem da acao (enviada pela classe corretora)
@@ -32,44 +44,18 @@ public class Server {
 					valor = Double.parseDouble(in.readLine());		//recebe o valor da enviado por corretora
 				}
 				
-				// Caso seja para descobrir o Valor da Acao, porta 4545
-				if(tipo.equalsIgnoreCase("valor")){
-					if(acao.equalsIgnoreCase("itau")){  
-						out.println(itau.getPrecoAtual());
-						} else if(acao.equalsIgnoreCase("petrobras")){
-							out.println(petro.getPrecoAtual());
-							} else if(acao.equalsIgnoreCase("vale")){
-								out.println(vale.getPrecoAtual());
-								}
-				}
+				mapaAcao = new HashMap<String,Acao>();		//Guardo as 3 instancias de acao
+				mapaAcao.put(itau.getNome(), itau);
+				mapaAcao.put(petro.getNome(), petro);
+				mapaAcao.put(vale.getNome(), vale);
 				
-				// Ordem de compra 4646	
-				if (tipo.equalsIgnoreCase("venda")){
-					if(acao.equalsIgnoreCase("itau")){  
-						itau.enviarOrdemDeVenda(valor);
-						} else if(acao.equalsIgnoreCase("petrobras")){
-							petro.enviarOrdemDeVenda(valor);
-							} else if(acao.equalsIgnoreCase("vale")){
-								vale.enviarOrdemDeVenda(valor);
-								} 
-				} 
-				
-				
-				//Ordem de Venda 4747
-				if (tipo.equalsIgnoreCase("compra")){
-					if(acao.equalsIgnoreCase("itau")){  
-						itau.enviarOrdemDeCompra(valor);
-						} else if(acao.equalsIgnoreCase("petrobras")){
-							petro.enviarOrdemDeCompra(valor);
-							} else if(acao.equalsIgnoreCase("vale")){
-								vale.enviarOrdemDeCompra(valor);
-								}
-				}
+				Server.efetuaOperacao(tipo);				//realiza a operacao requisitada (valor,compra ou venda)
+			
 						
-				out.println("Ordem de "+tipo+" Efetuada.");
+				out.println("Ordem de "+ tipo +" Efetuada.");
 						
 						
-				in.close();
+				in.close();									//fecha as conexoes
 				out.close();
 				socket.close();
 				serverSocket.close();
@@ -80,4 +66,18 @@ public class Server {
 				}// Fim Try/Catch
 		}//Fim while
 	}//Fim metodo servidor
+	
+	
+	
+	private static void efetuaOperacao(String tipo){
+		
+		if(tipo.equalsIgnoreCase("valor")){					//Verifica se a solicitacao é para o Valor da acao, server 4545
+			out.println(((Acao)mapaAcao.get(acao)).getPrecoAtual());
+		} else if (tipo.equalsIgnoreCase("venda")){						//Verifica se e solicitaco para efetuar Ordem de Venda, server 4646
+			((Acao)mapaAcao.get(acao)).enviarOrdemDeVenda(valor);
+		} else if (tipo.equalsIgnoreCase("compra")){					//Verifica se e solicitacao para efetuar Ordem de Compra, server 4747
+			((Acao)mapaAcao.get(acao)).enviarOrdemDeCompra(valor);
+		}
+	}
+	
 }// Fim classe
