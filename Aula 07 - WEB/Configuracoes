@@ -1,0 +1,5 @@
+Cria a pasta WebContent
+Dentro de WebContent -> META-INF e WEB-INF
+Dentro de WEB-INF -> Classes e Lib
+
+Propriedades (do projeto) -> Java Build Path -> Altera Caminho (WebContent... Classes)
